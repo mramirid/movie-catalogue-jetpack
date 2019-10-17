@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.mramirid.moviecatalogue.R;
 import com.mramirid.moviecatalogue.ui.favorites.FavoritesFragment;
+import com.mramirid.moviecatalogue.viewmodel.ViewModelFactory;
 
 public class FavoritesMovieFragment extends Fragment {
 
@@ -30,8 +32,15 @@ public class FavoritesMovieFragment extends Fragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		viewModel = ViewModelProviders.of(this).get(FavoritesMovieViewModel.class);
+		if (getActivity() != null) {
+			viewModel = obtainViewModel(getActivity(), this);
+		}
 		// TODO: Use the ViewModel
 	}
 
+	@NonNull
+	private FavoritesMovieViewModel obtainViewModel(FragmentActivity activity, Fragment fragment) {
+		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+		return ViewModelProviders.of(fragment, factory).get(FavoritesMovieViewModel.class);
+	}
 }

@@ -1,6 +1,5 @@
 package com.mramirid.moviecatalogue.ui.movies;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,7 +57,8 @@ public class MoviesFragment extends Fragment {
 		}
 	}
 
-	private MoviesViewModel obtainViewModel(Activity activity, Fragment fragment) {
+	@NonNull
+	private MoviesViewModel obtainViewModel(FragmentActivity activity, Fragment fragment) {
 		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 		return ViewModelProviders.of(fragment, factory).get(MoviesViewModel.class);
 	}

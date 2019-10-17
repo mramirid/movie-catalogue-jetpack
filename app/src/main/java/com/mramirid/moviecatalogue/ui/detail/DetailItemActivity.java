@@ -66,7 +66,7 @@ public class DetailItemActivity extends AppCompatActivity {
 	}
 
 	private DetailItemViewModel obtainViewModel(AppCompatActivity activity) {
-		ViewModelFactory factory = ViewModelFactory.getInstance();
+		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
 		return ViewModelProviders.of(activity, factory).get(DetailItemViewModel.class);
 	}
 
