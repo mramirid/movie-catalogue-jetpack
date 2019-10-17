@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mramirid.moviecatalogue.R;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
 import com.mramirid.moviecatalogue.utils.GlideApp;
@@ -26,6 +27,8 @@ public class DetailItemActivity extends AppCompatActivity {
 	private ImageView imgCover, imgPhoto;
 	private TextView tvName, tvGenres, tvYear, tvLanguage, tvDescription;
 	private RatingBar ratingBar;
+
+	private int state = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class DetailItemActivity extends AppCompatActivity {
 		tvDescription = findViewById(R.id.tv_description);
 		ProgressBar progressBar = findViewById(R.id.progress_bar);
 		ScrollView svContainer = findViewById(R.id.sv_container);
+		FloatingActionButton fabFavorite = findViewById(R.id.fab_favorite);
 
 		DetailItemViewModel viewModel = obtainViewModel(this);
 
@@ -62,6 +66,16 @@ public class DetailItemActivity extends AppCompatActivity {
 			svContainer.setVisibility(View.VISIBLE);
 			progressBar.setVisibility(View.GONE);
 			pupulateDetailItem(itemEntity);
+		});
+
+		fabFavorite.setOnClickListener(view -> {
+			if (state == 0) {
+				fabFavorite.setImageDrawable(getDrawable(R.drawable.ic_favorite_red_24dp));
+				state = 1;
+			} else {
+				fabFavorite.setImageDrawable(getDrawable(R.drawable.ic_favorite_border_red_24dp));
+				state = 0;
+			}
 		});
 	}
 

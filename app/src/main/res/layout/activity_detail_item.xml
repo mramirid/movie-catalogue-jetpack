@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:background="@color/colorPrimaryTernary"
-    tools:context=".ui.detail.DetailItemActivity"
-    tools:showIn="@layout/activity_detail_item">
+    tools:context=".ui.detail.DetailItemActivity">
 
     <ScrollView
         android:id="@+id/sv_container"
@@ -58,6 +57,21 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
                 tools:ignore="ContentDescription"/>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_favorite_border_red_24dp"
+                app:maxImageSize="35dp"
+                android:scaleType="centerInside"
+                app:elevation="4dp"
+                app:borderWidth="0dp"
+                android:backgroundTint="@color/colorPrimaryTernary"
+                app:layout_constraintStart_toEndOf="@id/img_photo"
+                app:layout_constraintTop_toBottomOf="@id/img_cover"
+                app:layout_constraintBottom_toBottomOf="@id/img_cover"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tv_name"
