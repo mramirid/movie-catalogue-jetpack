@@ -2,10 +2,12 @@ package com.mramirid.moviecatalogue.utils;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.mramirid.moviecatalogue.BuildConfig;
-import com.mramirid.moviecatalogue.data.source.remote.RemoteRepository.LoadItemsCallback;
 import com.mramirid.moviecatalogue.data.source.remote.response.ItemResponse;
 
 import org.json.JSONArray;
@@ -14,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -22,46 +25,50 @@ import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TY
 
 public class JsonHelper {
 
-	public void loadMovies(LoadItemsCallback callback) {
+	public LiveData<List<ItemResponse>> loadMovies() {
+		MutableLiveData<List<ItemResponse>> movies = new MutableLiveData<>();
 		String url = "https://api.themoviedb.org/3/discover/movie?api_key=" + BuildConfig.API_KEY + "&language=en-US";
+
 		new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-				ArrayList<ItemResponse> itemResponses = parseJsonToArrayList(new String(responseBody), TYPE_MOVIE);
-				callback.onItemsReceived(itemResponses);
-				EspressoIdlingResource.decrement();
+				List<ItemResponse> movieResponses = parseJsonToArrayList(new String(responseBody), TYPE_MOVIE);
+				movies.postValue(movieResponses);
 			}
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-				callback.onDataNotAvailable();
 				Log.e(this.getClass().getSimpleName(), "onFailure: request movies failed", error);
-				EspressoIdlingResource.decrement();
+				movies.postValue(new ArrayList<>());
 			}
 		});
+
+		return movies;
 	}
 
-	public void loadTvShows(LoadItemsCallback callback) {
+	public LiveData<List<ItemResponse>> loadTvShows() {
+		MutableLiveData<List<ItemResponse>> tvShows = new MutableLiveData<>();
 		String url = "https://api.themoviedb.org/3/discover/tv?api_key=" + BuildConfig.API_KEY + "&language=en-US";
+
 		new AsyncHttpClient().get(url, new AsyncHttpResponseHandler() {
 			@Override
 			public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-				ArrayList<ItemResponse> itemResponses = parseJsonToArrayList(new String(responseBody), TYPE_TV_SHOW);
-				callback.onItemsReceived(itemResponses);
-				EspressoIdlingResource.decrement();
+				List<ItemResponse> tvShowResponses = parseJsonToArrayList(new String(responseBody), TYPE_TV_SHOW);
+				tvShows.postValue(tvShowResponses);
 			}
 
 			@Override
 			public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-				callback.onDataNotAvailable();
 				Log.e(this.getClass().getSimpleName(), "onFailure: request movies failed", error);
-				EspressoIdlingResource.decrement();
+				tvShows.postValue(new ArrayList<>());
 			}
 		});
+
+		return tvShows;
 	}
 
-	private ArrayList<ItemResponse> parseJsonToArrayList(String responseJson, String itemsType) {
-		ArrayList<ItemResponse> itemResponses = new ArrayList<>();
+	private List<ItemResponse> parseJsonToArrayList(String responseJson, String itemsType) {
+		List<ItemResponse> itemResponses = new ArrayList<>();
 
 		try {
 			JSONObject responseObject = new JSONObject(responseJson);
