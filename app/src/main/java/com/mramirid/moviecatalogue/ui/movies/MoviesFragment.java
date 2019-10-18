@@ -2,6 +2,9 @@ package com.mramirid.moviecatalogue.ui.movies;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -24,6 +27,13 @@ public class MoviesFragment extends Fragment {
 
 	private RecyclerView rvMovies;
 	private ProgressBar progressBar;
+	private MoviesViewModel moviesViewModel;
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
 
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_movies, container, false);
@@ -40,16 +50,19 @@ public class MoviesFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (getActivity() != null) {
-			MoviesViewModel moviesViewModel = obtainViewModel(getActivity(), this);
+			moviesViewModel = obtainViewModel(getActivity(), this);
 			ItemsPagedAdapter moviesAdapter = new ItemsPagedAdapter();
 
-			moviesViewModel.getMovies(false).observe(this, pagedListResource -> {
+			moviesViewModel.fetch(false);
+			moviesViewModel.movies.observe(this, pagedListResource -> {
 				if (pagedListResource != null) {
 					switch (pagedListResource.status) {
 						case LOADING:
+							rvMovies.setVisibility(View.GONE);
 							progressBar.setVisibility(View.VISIBLE);
 							break;
 						case SUCCESS:
+							rvMovies.setVisibility(View.VISIBLE);
 							progressBar.setVisibility(View.GONE);
 							moviesAdapter.submitList(pagedListResource.data);
 							moviesAdapter.notifyDataSetChanged();
@@ -68,6 +81,19 @@ public class MoviesFragment extends Fragment {
 			rvMovies.setHasFixedSize(true);
 			rvMovies.setAdapter(moviesAdapter);
 		}
+	}
+
+	@Override
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+		inflater.inflate(R.menu.toolbar_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.action_fetch)
+			moviesViewModel.fetch(true);
+		return super.onOptionsItemSelected(item);
 	}
 
 	@NonNull

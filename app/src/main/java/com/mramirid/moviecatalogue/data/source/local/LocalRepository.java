@@ -44,4 +44,8 @@ public class LocalRepository {
 		item.setFavorited(newState);
 		movieCatalogueDao.updateItem(item);
 	}
+
+	public void clearNonFavoritesItemByType(String itemType) {
+		movieCatalogueDao.clearNonFavoritesItemByType(itemType);
+	}
 }

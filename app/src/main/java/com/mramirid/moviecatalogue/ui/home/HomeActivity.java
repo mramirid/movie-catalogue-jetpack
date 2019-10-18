@@ -20,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		toolbar.setTitle(getString(R.string.app_name));
+		setSupportActionBar(toolbar);
 
 		BottomNavigationView navView = findViewById(R.id.nav_view);
 		NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

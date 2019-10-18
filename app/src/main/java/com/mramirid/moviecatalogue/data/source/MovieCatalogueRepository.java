@@ -63,6 +63,8 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 
 			@Override
 			protected void saveCallResult(List<ItemResponse> data) {
+				localRepository.clearNonFavoritesItemByType(TYPE_MOVIE);
+
 				List<ItemEntity> movies = new ArrayList<>();
 
 				for (ItemResponse movieResponse : data) {
@@ -105,6 +107,8 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 
 			@Override
 			protected void saveCallResult(List<ItemResponse> data) {
+				localRepository.clearNonFavoritesItemByType(TYPE_TV_SHOW);
+
 				List<ItemEntity> tvShows = new ArrayList<>();
 
 				for (ItemResponse tvShowResponse : data) {

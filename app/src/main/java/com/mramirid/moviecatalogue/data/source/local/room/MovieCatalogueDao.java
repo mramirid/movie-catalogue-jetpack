@@ -28,8 +28,11 @@ public interface MovieCatalogueDao {
 	LiveData<ItemEntity> getItem(int itemId);
 
 	@Insert(onConflict = OnConflictStrategy.IGNORE)
-	long[] insertItems(List<ItemEntity> items);
+	void insertItems(List<ItemEntity> items);
 
 	@Update()
-	int updateItem(ItemEntity item);
+	void updateItem(ItemEntity item);
+
+	@Query("DELETE FROM itemEntities WHERE itemType = :itemType AND favorited = 0")
+	void clearNonFavoritesItemByType(String itemType);
 }

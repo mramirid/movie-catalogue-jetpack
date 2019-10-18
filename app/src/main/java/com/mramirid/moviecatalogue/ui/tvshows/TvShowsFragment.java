@@ -2,6 +2,9 @@ package com.mramirid.moviecatalogue.ui.tvshows;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -24,6 +27,13 @@ public class TvShowsFragment extends Fragment {
 
 	private RecyclerView rvTvShows;
 	private ProgressBar progressBar;
+	private TvShowsViewModel tvShowsViewModel;
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
 
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_tv_shows, container, false);
@@ -40,16 +50,19 @@ public class TvShowsFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (getActivity() != null) {
-			TvShowsViewModel tvShowsViewModel = obtainViewModel(getActivity(), this);
+			tvShowsViewModel = obtainViewModel(getActivity(), this);
 			ItemsPagedAdapter tvShowsAdapter = new ItemsPagedAdapter();
 
-			tvShowsViewModel.getTvShows(false).observe(this, pagedListResource -> {
+			tvShowsViewModel.fetch(false);
+			tvShowsViewModel.tvShows.observe(this, pagedListResource -> {
 				if (pagedListResource != null) {
 					switch (pagedListResource.status) {
 						case LOADING:
+							rvTvShows.setVisibility(View.GONE);
 							progressBar.setVisibility(View.VISIBLE);
 							break;
 						case SUCCESS:
+							rvTvShows.setVisibility(View.VISIBLE);
 							progressBar.setVisibility(View.GONE);
 							tvShowsAdapter.submitList(pagedListResource.data);
 							tvShowsAdapter.notifyDataSetChanged();
@@ -68,6 +81,19 @@ public class TvShowsFragment extends Fragment {
 			rvTvShows.setHasFixedSize(true);
 			rvTvShows.setAdapter(tvShowsAdapter);
 		}
+	}
+
+	@Override
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+		inflater.inflate(R.menu.toolbar_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.action_fetch)
+			tvShowsViewModel.fetch(true);
+		return super.onOptionsItemSelected(item);
 	}
 
 	@NonNull
