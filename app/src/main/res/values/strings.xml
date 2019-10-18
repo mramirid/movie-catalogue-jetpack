@@ -9,8 +9,6 @@
     <string name="lorem">Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora nobis reprehenderit, voluptate sint sit itaque repudiandae eligendi debitis beatae, laudantium eaque numquam officia. Laborum earum nisi quae nihil odio minima?Laudantium eveniet ipsum provident veniam labore, rerum tempora dolorum, vero hic mollitia necessitatibus nesciunt nam esse perspiciatis facere iste debitis suscipit? Assumenda vero asperiores officia a nostrum deleniti ipsum laborum.</string>
     <string name="title_activity_detail_item">Detail Item Activity</string>
     <string name="language">Language</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="favorites">Favorites</string>
+    <string name="fetch">Fetch</string>
 </resources>
