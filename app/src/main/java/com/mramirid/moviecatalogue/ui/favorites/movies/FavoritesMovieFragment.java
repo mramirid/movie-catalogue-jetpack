@@ -9,13 +9,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.mramirid.moviecatalogue.R;
+import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
 import com.mramirid.moviecatalogue.ui.adapter.ItemsPagedAdapter;
 import com.mramirid.moviecatalogue.utils.SpacesItemDecoration;
 import com.mramirid.moviecatalogue.viewmodel.ViewModelFactory;
@@ -24,6 +28,8 @@ public class FavoritesMovieFragment extends Fragment {
 
 	private RecyclerView rvFavoritesMovie;
 	private ProgressBar progressBar;
+	private ItemsPagedAdapter favoritesMovieAdapter;
+	private FavoritesMovieViewModel favoritesMovieViewModel;
 
 	public static FavoritesMovieFragment newInstance() {
 		return new FavoritesMovieFragment();
@@ -45,8 +51,8 @@ public class FavoritesMovieFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (getActivity() != null) {
-			FavoritesMovieViewModel favoritesMovieViewModel = obtainViewModel(getActivity(), this);
-			ItemsPagedAdapter favoritesMovieAdapter = new ItemsPagedAdapter();
+			favoritesMovieViewModel = obtainViewModel(getActivity(), this);
+			favoritesMovieAdapter = new ItemsPagedAdapter();
 
 			favoritesMovieViewModel.getFavoritesPaged().observe(this, pagedListResource -> {
 				if (pagedListResource != null) {
@@ -72,8 +78,35 @@ public class FavoritesMovieFragment extends Fragment {
 			rvFavoritesMovie.setLayoutManager(new LinearLayoutManager(getContext()));
 			rvFavoritesMovie.setHasFixedSize(true);
 			rvFavoritesMovie.setAdapter(favoritesMovieAdapter);
+			itemTouchHelper.attachToRecyclerView(rvFavoritesMovie);
 		}
 	}
+
+	private ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
+		@Override
+		public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+			return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+		}
+
+		@Override
+		public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+			return true;
+		}
+
+		@Override
+		public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+			if (getView() != null) {
+				int swipedPosition = viewHolder.getAdapterPosition();
+				ItemEntity item = favoritesMovieAdapter.getItemById(swipedPosition);
+				favoritesMovieViewModel.setFavorite(item);
+				Snackbar snackbar = Snackbar.make(getView(), "Undo removal?", Snackbar.LENGTH_LONG);
+				snackbar.setAction("UNDO", view -> favoritesMovieViewModel.setFavorite(item));
+				if (getContext() != null)
+					snackbar.setActionTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryTernary));
+				snackbar.show();
+			}
+		}
+	});
 
 	@NonNull
 	private FavoritesMovieViewModel obtainViewModel(FragmentActivity activity, Fragment fragment) {
