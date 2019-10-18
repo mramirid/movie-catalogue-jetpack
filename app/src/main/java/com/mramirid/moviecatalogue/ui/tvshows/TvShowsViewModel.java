@@ -2,11 +2,11 @@ package com.mramirid.moviecatalogue.ui.tvshows;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.paging.PagedList;
 
 import com.mramirid.moviecatalogue.data.source.MovieCatalogueRepository;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
-
-import java.util.ArrayList;
+import com.mramirid.moviecatalogue.vo.Resource;
 
 public class TvShowsViewModel extends ViewModel {
 
@@ -16,7 +16,7 @@ public class TvShowsViewModel extends ViewModel {
 		this.movieCatalogueRepository = movieCatalogueRepository;
 	}
 
-	LiveData<ArrayList<ItemEntity>> getTvShows() {
-		return movieCatalogueRepository.getTvShows();
+	LiveData<Resource<PagedList<ItemEntity>>> getTvShows(boolean reFetch) {
+		return movieCatalogueRepository.getTvShows(reFetch);
 	}
 }

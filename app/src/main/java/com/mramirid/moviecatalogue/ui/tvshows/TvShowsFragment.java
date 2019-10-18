@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mramirid.moviecatalogue.R;
-import com.mramirid.moviecatalogue.ui.adapter.ItemsAdapter;
+import com.mramirid.moviecatalogue.ui.adapter.ItemsPagedAdapter;
 import com.mramirid.moviecatalogue.utils.SpacesItemDecoration;
 import com.mramirid.moviecatalogue.viewmodel.ViewModelFactory;
 
@@ -39,14 +40,26 @@ public class TvShowsFragment extends Fragment {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		if (getActivity() != null) {
-			TvShowsViewModel viewModel = obtainViewModel(getActivity(), this);
-			ItemsAdapter tvShowsAdapter = new ItemsAdapter(getActivity());
-			progressBar.setVisibility(View.VISIBLE);
+			TvShowsViewModel tvShowsViewModel = obtainViewModel(getActivity(), this);
+			ItemsPagedAdapter tvShowsAdapter = new ItemsPagedAdapter();
 
-			viewModel.getTvShows().observe(this, itemEntities -> {
-				progressBar.setVisibility(View.GONE);
-				tvShowsAdapter.setItems(itemEntities);
-				tvShowsAdapter.notifyDataSetChanged();
+			tvShowsViewModel.getTvShows(false).observe(this, pagedListResource -> {
+				if (pagedListResource != null) {
+					switch (pagedListResource.status) {
+						case LOADING:
+							progressBar.setVisibility(View.VISIBLE);
+							break;
+						case SUCCESS:
+							progressBar.setVisibility(View.GONE);
+							tvShowsAdapter.submitList(pagedListResource.data);
+							tvShowsAdapter.notifyDataSetChanged();
+							break;
+						case ERROR:
+							progressBar.setVisibility(View.GONE);
+							Toast.makeText(getContext(), pagedListResource.message, Toast.LENGTH_SHORT).show();
+							break;
+					}
+				}
 			});
 
 			int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.rv_item_margin);
