@@ -1,15 +1,18 @@
 package com.mramirid.moviecatalogue.ui.detail;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.mramirid.moviecatalogue.data.source.MovieCatalogueRepository;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
+import com.mramirid.moviecatalogue.vo.Resource;
 
 public class DetailItemViewModel extends ViewModel {
 
-	private int itemId;
-	private String itemType;
+	private MutableLiveData<Integer> itemId = new MutableLiveData<>();
+
 	private MovieCatalogueRepository movieCatalogueRepository;
 
 	public DetailItemViewModel(MovieCatalogueRepository movieCatalogueRepository) {
@@ -17,14 +20,20 @@ public class DetailItemViewModel extends ViewModel {
 	}
 
 	void setItemId(int itemId) {
-		this.itemId = itemId;
+		this.itemId.setValue(itemId);
 	}
 
-	void setItemType(String itemType) {
-		this.itemType = itemType;
-	}
+	LiveData<Resource<ItemEntity>> item = Transformations.switchMap(
+			itemId, input -> movieCatalogueRepository.getItem(input)
+	);
 
-	LiveData<ItemEntity> getItem() {
-		return movieCatalogueRepository.getItem(itemType, itemId);
+	void setFavorite() {
+		if (item.getValue() != null) {
+			ItemEntity selectedItem = item.getValue().data;
+			if (selectedItem != null) {
+				final boolean newState = !selectedItem.isFavorited();
+				movieCatalogueRepository.setFavorite(selectedItem, newState);
+			}
+		}
 	}
 }

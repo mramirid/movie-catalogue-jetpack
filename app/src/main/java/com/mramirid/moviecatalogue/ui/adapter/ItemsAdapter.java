@@ -63,7 +63,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ItemsViewHol
 		holder.itemView.setOnClickListener(view -> {
 			Intent moveToDetailItem = new Intent(activity, DetailItemActivity.class);
 			moveToDetailItem.putExtra(DetailItemActivity.EXTRA_ITEM_ID, getItems().get(position).getId());
-			moveToDetailItem.putExtra(DetailItemActivity.EXTRA_ITEM_TYPE, getItems().get(position).getItemType());
+//			moveToDetailItem.putExtra(DetailItemActivity.EXTRA_ITEM_TYPE, getItems().get(position).getItemType());
 			activity.startActivity(moveToDetailItem);
 		});
 	}

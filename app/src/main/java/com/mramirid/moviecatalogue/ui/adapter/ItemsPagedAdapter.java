@@ -65,7 +65,6 @@ public class ItemsPagedAdapter extends PagedListAdapter<ItemEntity, ItemsPagedAd
 				Context context = holder.itemView.getContext();
 				Intent moveToDetailItem = new Intent(context, DetailItemActivity.class);
 				moveToDetailItem.putExtra(DetailItemActivity.EXTRA_ITEM_ID, item.getId());
-				moveToDetailItem.putExtra(DetailItemActivity.EXTRA_ITEM_TYPE, item.getItemType());
 				context.startActivity(moveToDetailItem);
 			});
 		}
