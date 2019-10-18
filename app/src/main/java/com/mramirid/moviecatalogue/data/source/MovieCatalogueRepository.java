@@ -44,7 +44,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 	}
 
 	@Override
-	public LiveData<Resource<PagedList<ItemEntity>>> getMovies(boolean fetchNow) {
+	public LiveData<Resource<PagedList<ItemEntity>>> getMovies(boolean reFetch) {
 		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
 			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
@@ -53,7 +53,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 
 			@Override
 			protected Boolean shouldFetch(PagedList<ItemEntity> data) {
-				return (data == null) || (data.size() == 0) || fetchNow;
+				return (data == null) || (data.size() == 0) || reFetch;
 			}
 
 			@Override
@@ -86,7 +86,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 	}
 
 	@Override
-	public LiveData<Resource<PagedList<ItemEntity>>> getTvShows(boolean fetchNow) {
+	public LiveData<Resource<PagedList<ItemEntity>>> getTvShows(boolean reFetch) {
 		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
 			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
@@ -95,7 +95,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 
 			@Override
 			protected Boolean shouldFetch(PagedList<ItemEntity> data) {
-				return (data == null) || (data.size() == 0) || fetchNow;
+				return (data == null) || (data.size() == 0) || reFetch;
 			}
 
 			@Override
