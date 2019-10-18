@@ -41,9 +41,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 	private void fetchFromNetwork(LiveData<ResultType> dbSource) {
 		LiveData<ApiResponse<RequestType>> apiResponse = createCall();
 
-		result.addSource(dbSource, resultType -> {
-			result.setValue(Resource.loading(resultType));
-		});
+		result.addSource(dbSource, resultType -> result.setValue(Resource.loading(resultType)));
 
 		result.addSource(apiResponse, requestTypeApiResponse -> {
 			result.removeSource(apiResponse);
