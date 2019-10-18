@@ -1,10 +1,14 @@
 package com.mramirid.moviecatalogue.data.source.remote;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+
 import com.mramirid.moviecatalogue.data.source.remote.response.ItemResponse;
 import com.mramirid.moviecatalogue.utils.EspressoIdlingResource;
 import com.mramirid.moviecatalogue.utils.JsonHelper;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class RemoteRepository {
 
@@ -21,18 +25,53 @@ public class RemoteRepository {
 		return INSTANCE;
 	}
 
-	public void getMovies(LoadItemsCallback callback) {
+	public LiveData<ApiResponse<List<ItemResponse>>> getMovies() {
 		EspressoIdlingResource.increment();
-		jsonHelper.loadMovies(callback);
+
+		MutableLiveData<ApiResponse<List<ItemResponse>>> resultMovies = new MutableLiveData<>();
+
+		Observer<List<ItemResponse>> resultMoviesObserver = new Observer<List<ItemResponse>>() {
+			@Override
+			public void onChanged(List<ItemResponse> itemResponses) {
+				if (itemResponses.size() != 0)
+					resultMovies.setValue(ApiResponse.success(itemResponses));
+				else
+					resultMovies.setValue(ApiResponse.error("Movies request failed", itemResponses));
+
+				if (!EspressoIdlingResource.getEspressoIdlingResource().isIdleNow())
+					EspressoIdlingResource.decrement();
+
+				jsonHelper.loadMovies().removeObserver(this);
+			}
+		};
+
+		jsonHelper.loadMovies().observeForever(resultMoviesObserver);
+
+		return resultMovies;
 	}
 
-	public void getTvShows(LoadItemsCallback callback) {
+	public LiveData<ApiResponse<List<ItemResponse>>> getTvShows() {
 		EspressoIdlingResource.increment();
-		jsonHelper.loadTvShows(callback);
-	}
 
-	public interface LoadItemsCallback {
-		void onItemsReceived(ArrayList<ItemResponse> itemResponses);
-		void onDataNotAvailable();
+		MutableLiveData<ApiResponse<List<ItemResponse>>> resultTvShows = new MutableLiveData<>();
+
+		Observer<List<ItemResponse>> resultTvShowsObserver = new Observer<List<ItemResponse>>() {
+			@Override
+			public void onChanged(List<ItemResponse> itemResponses) {
+				if (itemResponses.size() != 0)
+					resultTvShows.setValue(ApiResponse.success(itemResponses));
+				else
+					resultTvShows.setValue(ApiResponse.error("Tv Shows request failed", itemResponses));
+
+				if (!EspressoIdlingResource.getEspressoIdlingResource().isIdleNow())
+					EspressoIdlingResource.decrement();
+
+				jsonHelper.loadMovies().removeObserver(this);
+			}
+		};
+
+		jsonHelper.loadTvShows().observeForever(resultTvShowsObserver);
+
+		return resultTvShows;
 	}
 }

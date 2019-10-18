@@ -1,20 +1,20 @@
 package com.mramirid.moviecatalogue.data.source;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
 import com.mramirid.moviecatalogue.data.source.local.LocalRepository;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
+import com.mramirid.moviecatalogue.data.source.remote.ApiResponse;
 import com.mramirid.moviecatalogue.data.source.remote.RemoteRepository;
 import com.mramirid.moviecatalogue.data.source.remote.response.ItemResponse;
+import com.mramirid.moviecatalogue.utils.AppExecutors;
+import com.mramirid.moviecatalogue.vo.Resource;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.List;
 
 import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_MOVIE;
 import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_TV_SHOW;
@@ -25,175 +25,161 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 
 	private final RemoteRepository remoteRepository;
 	private final LocalRepository localRepository;
-	private final ExecutorService executorService;
+	private final AppExecutors appExecutors;
 
-	private MovieCatalogueRepository(@NonNull RemoteRepository remoteRepository, @NonNull LocalRepository localRepository, @NonNull ExecutorService executorService) {
+	private MovieCatalogueRepository(@NonNull RemoteRepository remoteRepository, @NonNull LocalRepository localRepository, @NonNull AppExecutors appExecutors) {
 		this.remoteRepository = remoteRepository;
 		this.localRepository = localRepository;
-		this.executorService = executorService;
+		this.appExecutors = appExecutors;
 	}
 
-	public static MovieCatalogueRepository getInstance(RemoteRepository remoteRepository, LocalRepository localRepository, ExecutorService executorService) {
+	public static MovieCatalogueRepository getInstance(RemoteRepository remoteRepository, LocalRepository localRepository, AppExecutors appExecutors) {
 		if (INSTANCE == null) {
 			synchronized (MovieCatalogueRepository.class) {
 				if (INSTANCE == null)
-					INSTANCE = new MovieCatalogueRepository(remoteRepository, localRepository, executorService);
+					INSTANCE = new MovieCatalogueRepository(remoteRepository, localRepository, appExecutors);
 			}
 		}
 		return INSTANCE;
 	}
 
 	@Override
-	public LiveData<ArrayList<ItemEntity>> getMovies() {
-		MutableLiveData<ArrayList<ItemEntity>> movieResults = new MutableLiveData<>();
-
-		remoteRepository.getMovies(new RemoteRepository.LoadItemsCallback() {
+	public LiveData<Resource<PagedList<ItemEntity>>> getMovies(boolean fetchNow) {
+		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
-			public void onItemsReceived(ArrayList<ItemResponse> itemResponses) {
-				ArrayList<ItemEntity> movies = new ArrayList<>();
-
-				for (ItemResponse itemResponse : itemResponses) {
-					ItemEntity movie = new ItemEntity(
-							itemResponse.getId(),
-							itemResponse.getImgPosterPath(),
-							itemResponse.getName(),
-							itemResponse.getItemType(),
-							itemResponse.getGenres(),
-							itemResponse.getDescription(),
-							itemResponse.getLanguage(),
-							itemResponse.getYear(),
-							itemResponse.getRating()
-					);
-					movies.add(movie);
-				}
-
-				movieResults.postValue(movies);
+			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
+				return new LivePagedListBuilder<>(localRepository.getItems(TYPE_MOVIE), 20).build();
 			}
 
 			@Override
-			public void onDataNotAvailable() {
-				Log.e(this.getClass().getSimpleName(), "onDataNotAvailable: getMovies: Request failed");
-			}
-		});
-
-		return movieResults;
-	}
-
-	@Override
-	public LiveData<ArrayList<ItemEntity>> getTvShows() {
-		MutableLiveData<ArrayList<ItemEntity>> tvShowResults = new MutableLiveData<>();
-
-		remoteRepository.getTvShows(new RemoteRepository.LoadItemsCallback() {
-			@Override
-			public void onItemsReceived(ArrayList<ItemResponse> itemResponses) {
-				ArrayList<ItemEntity> tvShows = new ArrayList<>();
-
-				for (ItemResponse itemResponse : itemResponses) {
-					ItemEntity tvShow = new ItemEntity(
-							itemResponse.getId(),
-							itemResponse.getImgPosterPath(),
-							itemResponse.getName(),
-							itemResponse.getItemType(),
-							itemResponse.getGenres(),
-							itemResponse.getDescription(),
-							itemResponse.getLanguage(),
-							itemResponse.getYear(),
-							itemResponse.getRating()
-					);
-					tvShows.add(tvShow);
-				}
-
-				tvShowResults.postValue(tvShows);
+			protected Boolean shouldFetch(PagedList<ItemEntity> data) {
+				return (data == null) || (data.size() == 0) || fetchNow;
 			}
 
 			@Override
-			public void onDataNotAvailable() {
-				Log.e(this.getClass().getSimpleName(), "onDataNotAvailable: getTvShows: Request failed");
+			protected LiveData<ApiResponse<List<ItemResponse>>> createCall() {
+				return remoteRepository.getMovies();
 			}
-		});
 
-		return tvShowResults;
+			@Override
+			protected void saveCallResult(List<ItemResponse> data) {
+				List<ItemEntity> movies = new ArrayList<>();
+
+				for (ItemResponse movieResponse : data) {
+					movies.add(new ItemEntity(
+							movieResponse.getId(),
+							movieResponse.getImgPosterPath(),
+							movieResponse.getName(),
+							movieResponse.getItemType(),
+							movieResponse.getGenres(),
+							movieResponse.getDescription(),
+							movieResponse.getLanguage(),
+							movieResponse.getYear(),
+							movieResponse.getRating(),
+							false
+					));
+				}
+
+				localRepository.insertItems(movies);
+			}
+		}.asLiveData();
 	}
 
 	@Override
-	public LiveData<ItemEntity> getItem(String itemType, int id) {
-		MutableLiveData<ItemEntity> itemResult = new MutableLiveData<>();
+	public LiveData<Resource<PagedList<ItemEntity>>> getTvShows(boolean fetchNow) {
+		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
+			@Override
+			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
+				return new LivePagedListBuilder<>(localRepository.getItems(TYPE_TV_SHOW), 20).build();
+			}
 
-		if (itemType.equals(TYPE_MOVIE)) {
-			remoteRepository.getMovies(new RemoteRepository.LoadItemsCallback() {
-				@Override
-				public void onItemsReceived(ArrayList<ItemResponse> itemResponses) {
-					for (ItemResponse itemResponse : itemResponses) {
-						if (itemResponse.getId() == id) {
-							ItemEntity movie = new ItemEntity(
-									itemResponse.getId(),
-									itemResponse.getImgPosterPath(),
-									itemResponse.getName(),
-									itemResponse.getItemType(),
-									itemResponse.getGenres(),
-									itemResponse.getDescription(),
-									itemResponse.getLanguage(),
-									itemResponse.getYear(),
-									itemResponse.getRating()
-							);
-							itemResult.postValue(movie);
-							break;
-						}
-					}
+			@Override
+			protected Boolean shouldFetch(PagedList<ItemEntity> data) {
+				return (data == null) || (data.size() == 0) || fetchNow;
+			}
+
+			@Override
+			protected LiveData<ApiResponse<List<ItemResponse>>> createCall() {
+				return remoteRepository.getTvShows();
+			}
+
+			@Override
+			protected void saveCallResult(List<ItemResponse> data) {
+				List<ItemEntity> tvShows = new ArrayList<>();
+
+				for (ItemResponse tvShowResponse : data) {
+					tvShows.add(new ItemEntity(
+							tvShowResponse.getId(),
+							tvShowResponse.getImgPosterPath(),
+							tvShowResponse.getName(),
+							tvShowResponse.getItemType(),
+							tvShowResponse.getGenres(),
+							tvShowResponse.getDescription(),
+							tvShowResponse.getLanguage(),
+							tvShowResponse.getYear(),
+							tvShowResponse.getRating(),
+							false
+					));
 				}
 
-				@Override
-				public void onDataNotAvailable() {
-					Log.e(this.getClass().getSimpleName(), "onDataNotAvailable: getItem: getMovies: Request failed");
-				}
-			});
-		} else if (itemType.equals(TYPE_TV_SHOW)) {
-			remoteRepository.getTvShows(new RemoteRepository.LoadItemsCallback() {
-				@Override
-				public void onItemsReceived(ArrayList<ItemResponse> itemResponses) {
-					for (ItemResponse itemResponse : itemResponses) {
-						if (itemResponse.getId() == id) {
-							ItemEntity tvShow = new ItemEntity(
-									itemResponse.getId(),
-									itemResponse.getImgPosterPath(),
-									itemResponse.getName(),
-									itemResponse.getItemType(),
-									itemResponse.getGenres(),
-									itemResponse.getDescription(),
-									itemResponse.getLanguage(),
-									itemResponse.getYear(),
-									itemResponse.getRating()
-							);
-							itemResult.postValue(tvShow);
-							break;
-						}
-					}
-				}
-
-				@Override
-				public void onDataNotAvailable() {
-					Log.e(this.getClass().getSimpleName(), "onDataNotAvailable: getItem: getTvShows: Request failed");
-				}
-			});
-		}
-
-		return itemResult;
+				localRepository.insertItems(tvShows);
+			}
+		}.asLiveData();
 	}
 
 	@Override
-	public void insertFavorite(ItemEntity item) {
-		Runnable runnable = () -> localRepository.insertFavorite(item);
-		executorService.execute(runnable);
+	public LiveData<Resource<PagedList<ItemEntity>>> getFavoritesPaged(String itemType) {
+		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
+			@Override
+			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
+				return new LivePagedListBuilder<>(localRepository.getFavoritedItemsPaged(itemType), 20).build();
+			}
+
+			@Override
+			protected Boolean shouldFetch(PagedList<ItemEntity> data) {
+				return false;
+			}
+
+			@Override
+			protected LiveData<ApiResponse<List<ItemResponse>>> createCall() {
+				return null;
+			}
+
+			@Override
+			protected void saveCallResult(List<ItemResponse> data) {
+
+			}
+		}.asLiveData();
 	}
 
 	@Override
-	public void deleteFavorite(ItemEntity item) {
-		Runnable runnable = () -> localRepository.deleteFavorite(item);
-		executorService.execute(runnable);
+	public LiveData<Resource<ItemEntity>> getItem(int itemId) {
+		return new NetworkBoundResource<ItemEntity, ItemResponse>(appExecutors) {
+			@Override
+			protected LiveData<ItemEntity> loadFromDB() {
+				return localRepository.getItem(itemId);
+			}
+
+			@Override
+			protected Boolean shouldFetch(ItemEntity data) {
+				return false;
+			}
+
+			@Override
+			protected LiveData<ApiResponse<ItemResponse>> createCall() {
+				return null;
+			}
+
+			@Override
+			protected void saveCallResult(ItemResponse data) {
+
+			}
+		}.asLiveData();
 	}
 
 	@Override
-	public LiveData<PagedList<ItemEntity>> getFavoritesPaged(String itemType) {
-		return new LivePagedListBuilder<>(localRepository.getFavoritesPaged(itemType), 20).build();
+	public void setFavorite(ItemEntity item, boolean newState) {
+		Runnable runnable = () -> localRepository.setFavorite(item, newState);
+		appExecutors.diskIO().execute(runnable);
 	}
 }

@@ -1,9 +1,12 @@
 package com.mramirid.moviecatalogue.data.source.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.paging.DataSource;
 
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
 import com.mramirid.moviecatalogue.data.source.local.room.MovieCatalogueDao;
+
+import java.util.List;
 
 public class LocalRepository {
 
@@ -21,15 +24,24 @@ public class LocalRepository {
 		return INSTANCE;
 	}
 
-	public DataSource.Factory<Integer, ItemEntity> getFavoritesPaged(String itemType) {
-		return movieCatalogueDao.getFavoritesAsPaged(itemType);
+	public DataSource.Factory<Integer, ItemEntity> getItems(String itemType) {
+		return movieCatalogueDao.getItems(itemType);
 	}
 
-	public void insertFavorite(ItemEntity item) {
-		movieCatalogueDao.insertFavorite(item);
+	public DataSource.Factory<Integer, ItemEntity> getFavoritedItemsPaged(String itemType) {
+		return movieCatalogueDao.getFavoritedItemsAsPaged(itemType);
 	}
 
-	public void deleteFavorite(ItemEntity item) {
-		movieCatalogueDao.deleteFavorite(item);
+	public LiveData<ItemEntity> getItem(int itemId) {
+		return movieCatalogueDao.getItem(itemId);
+	}
+
+	public void insertItems(List<ItemEntity> items) {
+		movieCatalogueDao.insertItems(items);
+	}
+
+	public void setFavorite(ItemEntity item, boolean newState) {
+		item.setFavorited(newState);
+		movieCatalogueDao.updateItem(item);
 	}
 }

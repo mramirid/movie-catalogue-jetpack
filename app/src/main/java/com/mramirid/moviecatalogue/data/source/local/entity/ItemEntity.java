@@ -35,10 +35,14 @@ public class ItemEntity {
 	@ColumnInfo(name = "rating")
 	private float rating;
 
+	@ColumnInfo(name = "favorited")
+	private boolean favorited;
+
 	public static final String TYPE_MOVIE = "movie";
 	public static final String TYPE_TV_SHOW = "tv_show";
 
-	public ItemEntity(int id, String imgPosterPath, String name, String itemType, String genres, String description, String language, String year, float rating) {
+	public ItemEntity(int id, String imgPosterPath, String name, String itemType, String genres,
+					  String description, String language, String year, float rating, boolean favorited) {
 		this.id = id;
 		this.imgPosterPath = imgPosterPath;
 		this.name = name;
@@ -48,14 +52,11 @@ public class ItemEntity {
 		this.language = language;
 		this.year = year;
 		this.rating = rating;
+		this.favorited = favorited;
 	}
 
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getImgPosterPath() {
@@ -64,10 +65,6 @@ public class ItemEntity {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getItemType() {
@@ -94,4 +91,11 @@ public class ItemEntity {
 		return rating;
 	}
 
+	public boolean isFavorited() {
+		return favorited;
+	}
+
+	public void setFavorited(boolean favorited) {
+		this.favorited = favorited;
+	}
 }
