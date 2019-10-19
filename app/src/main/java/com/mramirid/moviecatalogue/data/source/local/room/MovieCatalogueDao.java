@@ -35,4 +35,7 @@ public interface MovieCatalogueDao {
 
 	@Query("DELETE FROM itemEntities WHERE itemType = :itemType AND favorited = 0")
 	void clearNonFavoritesItemByType(String itemType);
+
+	@Query("UPDATE itemEntities SET favorited = 0 WHERE favorited = 1 AND itemType = :itemType")
+	void clearFavoritesItemByType(String itemType);
 }

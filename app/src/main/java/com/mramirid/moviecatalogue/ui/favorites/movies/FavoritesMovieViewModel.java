@@ -26,4 +26,8 @@ public class FavoritesMovieViewModel extends ViewModel {
 		final boolean newState = !movie.isFavorited();
 		movieCatalogueRepository.setFavorite(movie, newState);
 	}
+
+	void clearFavorites() {
+		movieCatalogueRepository.clearFavorites(TYPE_MOVIE);
+	}
 }

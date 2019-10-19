@@ -11,4 +11,6 @@
     <string name="language">Language</string>
     <string name="favorites">Favorites</string>
     <string name="fetch">Fetch</string>
+    <string name="empty">Empty</string>
+    <string name="clear">Clear</string>
 </resources>

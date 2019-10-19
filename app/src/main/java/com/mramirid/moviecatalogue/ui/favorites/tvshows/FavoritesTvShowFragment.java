@@ -2,6 +2,9 @@ package com.mramirid.moviecatalogue.ui.favorites.tvshows;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -33,6 +36,12 @@ public class FavoritesTvShowFragment extends Fragment {
 
 	public static FavoritesTvShowFragment newInstance() {
 		return new FavoritesTvShowFragment();
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -107,6 +116,19 @@ public class FavoritesTvShowFragment extends Fragment {
 			}
 		}
 	});
+
+	@Override
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+		inflater.inflate(R.menu.favorites_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.action_clear)
+			favoritesTvShowViewModel.clearFavorites();
+		return super.onOptionsItemSelected(item);
+	}
 
 	private FavoritesTvShowViewModel obtainViewModel(FragmentActivity activity, Fragment fragment) {
 		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());

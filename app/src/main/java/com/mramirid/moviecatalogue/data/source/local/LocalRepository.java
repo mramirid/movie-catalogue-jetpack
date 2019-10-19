@@ -48,4 +48,8 @@ public class LocalRepository {
 	public void clearNonFavoritesItemByType(String itemType) {
 		movieCatalogueDao.clearNonFavoritesItemByType(itemType);
 	}
+
+	public void clearFavorites(String itemType) {
+		movieCatalogueDao.clearFavoritesItemByType(itemType);
+	}
 }

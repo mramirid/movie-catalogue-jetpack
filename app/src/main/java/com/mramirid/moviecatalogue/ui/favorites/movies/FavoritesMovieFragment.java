@@ -2,6 +2,9 @@ package com.mramirid.moviecatalogue.ui.favorites.movies;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -33,6 +36,12 @@ public class FavoritesMovieFragment extends Fragment {
 
 	public static FavoritesMovieFragment newInstance() {
 		return new FavoritesMovieFragment();
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -107,6 +116,19 @@ public class FavoritesMovieFragment extends Fragment {
 			}
 		}
 	});
+
+	@Override
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+		inflater.inflate(R.menu.favorites_menu, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.action_clear)
+			favoritesMovieViewModel.clearFavorites();
+		return super.onOptionsItemSelected(item);
+	}
 
 	@NonNull
 	private FavoritesMovieViewModel obtainViewModel(FragmentActivity activity, Fragment fragment) {

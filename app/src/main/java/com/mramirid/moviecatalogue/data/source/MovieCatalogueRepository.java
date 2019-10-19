@@ -186,4 +186,10 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 		Runnable runnable = () -> localRepository.setFavorite(item, newState);
 		appExecutors.diskIO().execute(runnable);
 	}
+
+	@Override
+	public void clearFavorites(String itemType) {
+		Runnable runnable = () -> localRepository.clearFavorites(itemType);
+		appExecutors.diskIO().execute(runnable);
+	}
 }

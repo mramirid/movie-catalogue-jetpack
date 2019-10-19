@@ -17,4 +17,6 @@ public interface MovieCatalogueDataSource {
 	LiveData<Resource<ItemEntity>> getItem(int itemId);
 
 	void setFavorite(ItemEntity item, boolean newState);
+
+	void clearFavorites(String itemType);
 }
