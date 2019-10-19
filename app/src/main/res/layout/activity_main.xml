@@ -30,7 +30,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu" />
 
-    <!--  For testing purposes  -->
+    <!-- For testing -->
     <FrameLayout
         android:id="@+id/fl_container"
         android:layout_width="0dp"
