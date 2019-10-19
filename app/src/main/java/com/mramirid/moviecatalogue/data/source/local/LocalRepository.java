@@ -24,12 +24,12 @@ public class LocalRepository {
 		return INSTANCE;
 	}
 
-	public DataSource.Factory<Integer, ItemEntity> getItems(String itemType) {
-		return movieCatalogueDao.getItems(itemType);
+	public DataSource.Factory<Integer, ItemEntity> getItemsPaged(String itemType) {
+		return movieCatalogueDao.getItemsAsPaged(itemType);
 	}
 
-	public DataSource.Factory<Integer, ItemEntity> getFavoritedItemsPaged(String itemType) {
-		return movieCatalogueDao.getFavoritedItemsAsPaged(itemType);
+	public DataSource.Factory<Integer, ItemEntity> getFavoritesItemPaged(String itemType) {
+		return movieCatalogueDao.getFavoritesItemAsPaged(itemType);
 	}
 
 	public LiveData<ItemEntity> getItem(int itemId) {

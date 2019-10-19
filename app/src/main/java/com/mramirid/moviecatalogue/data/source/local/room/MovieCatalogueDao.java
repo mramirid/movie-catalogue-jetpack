@@ -18,11 +18,11 @@ public interface MovieCatalogueDao {
 
 	@WorkerThread
 	@Query("SELECT * FROM itemEntities WHERE itemType = :itemType")
-	DataSource.Factory<Integer, ItemEntity> getItems(String itemType);
+	DataSource.Factory<Integer, ItemEntity> getItemsAsPaged(String itemType);
 
 	@WorkerThread
 	@Query("SELECT * FROM itemEntities WHERE favorited = 1 AND itemType = :itemType")
-	DataSource.Factory<Integer, ItemEntity> getFavoritedItemsAsPaged(String itemType);
+	DataSource.Factory<Integer, ItemEntity> getFavoritesItemAsPaged(String itemType);
 
 	@Query("SELECT * FROM itemEntities WHERE id = :itemId")
 	LiveData<ItemEntity> getItem(int itemId);

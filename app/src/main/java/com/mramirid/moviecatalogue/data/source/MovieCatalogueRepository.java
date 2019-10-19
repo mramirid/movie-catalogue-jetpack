@@ -48,7 +48,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
 			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
-				return new LivePagedListBuilder<>(localRepository.getItems(TYPE_MOVIE), 20).build();
+				return new LivePagedListBuilder<>(localRepository.getItemsPaged(TYPE_MOVIE), 20).build();
 			}
 
 			@Override
@@ -92,7 +92,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
 			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
-				return new LivePagedListBuilder<>(localRepository.getItems(TYPE_TV_SHOW), 20).build();
+				return new LivePagedListBuilder<>(localRepository.getItemsPaged(TYPE_TV_SHOW), 20).build();
 			}
 
 			@Override
@@ -136,7 +136,7 @@ public class MovieCatalogueRepository implements MovieCatalogueDataSource {
 		return new NetworkBoundResource<PagedList<ItemEntity>, List<ItemResponse>>(appExecutors) {
 			@Override
 			protected LiveData<PagedList<ItemEntity>> loadFromDB() {
-				return new LivePagedListBuilder<>(localRepository.getFavoritedItemsPaged(itemType), 20).build();
+				return new LivePagedListBuilder<>(localRepository.getFavoritesItemPaged(itemType), 20).build();
 			}
 
 			@Override
