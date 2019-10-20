@@ -8,6 +8,7 @@ import com.mramirid.moviecatalogue.R;
 import com.mramirid.moviecatalogue.ui.home.HomeActivity;
 import com.mramirid.moviecatalogue.utils.EspressoIdlingResource;
 import com.mramirid.moviecatalogue.utils.RecyclerViewItemCountAssertion;
+import com.mramirid.moviecatalogue.utils.TabLayoutViewAction;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,12 +39,19 @@ public class MovieCatalogueTest {
 
 	@Test
 	public void toDetailMovieActivity() {
+		// Clear database favorites movie untuk skenario testing selanjutnya
+		onView(withId(R.id.navigation_favorites)).perform(click());
+		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(0));
+		onView(withId(R.id.action_clear)).perform(click());
+
+		onView(withId(R.id.navigation_movies)).perform(click());
 		onView(withId(R.id.rv_movies)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_movies)).check(new RecyclerViewItemCountAssertion(20));
 		onView(withId(R.id.rv_movies)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
 		onView(withId(R.id.img_cover)).check(matches(isDisplayed()));
 		onView(withId(R.id.img_photo)).check(matches(isDisplayed()));
+		onView(withId(R.id.tv_language)).perform(scrollTo());
 		onView(withId(R.id.tv_name)).check(matches(isDisplayed()));
 		onView(withId(R.id.rb_star)).check(matches(isDisplayed()));
 		onView(withId(R.id.tv_genres)).check(matches(isDisplayed()));
@@ -55,14 +63,19 @@ public class MovieCatalogueTest {
 
 	@Test
 	public void toDetailTvShowActivity() {
-		onView(withId(R.id.navigation_tv_shows)).perform(click());
+		// Clear database favorites tv show untuk skenario testing selanjutnya
+		onView(withId(R.id.navigation_favorites)).perform(click());
+		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(1));
+		onView(withId(R.id.action_clear)).perform(click());
 
+		onView(withId(R.id.navigation_tv_shows)).perform(click());
 		onView(withId(R.id.rv_tv_shows)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_tv_shows)).check(new RecyclerViewItemCountAssertion(20));
 		onView(withId(R.id.rv_tv_shows)).perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
 		onView(withId(R.id.img_cover)).check(matches(isDisplayed()));
 		onView(withId(R.id.img_photo)).check(matches(isDisplayed()));
+		onView(withId(R.id.tv_language)).perform(scrollTo());
 		onView(withId(R.id.tv_name)).check(matches(isDisplayed()));
 		onView(withId(R.id.rb_star)).check(matches(isDisplayed()));
 		onView(withId(R.id.tv_genres)).check(matches(isDisplayed()));

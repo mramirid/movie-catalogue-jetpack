@@ -19,12 +19,12 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_MOVIE;
 
 public class DetailMovieActivityTest {
 
@@ -37,7 +37,6 @@ public class DetailMovieActivityTest {
 			Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 			Intent result = new Intent(targetContext, DetailItemActivity.class);
 			result.putExtra(DetailItemActivity.EXTRA_ITEM_ID, dummyMovie.getId());
-			result.putExtra(DetailItemActivity.EXTRA_ITEM_TYPE, TYPE_MOVIE);
 			return result;
 		}
 	};
@@ -56,6 +55,7 @@ public class DetailMovieActivityTest {
 	public void loadMovie() {
 		onView(withId(R.id.img_photo)).check(matches(isDisplayed()));
 
+		onView(withId(R.id.tv_language)).perform(scrollTo());
 		onView(withId(R.id.tv_name)).check(matches(isDisplayed()));
 		onView(withId(R.id.tv_name)).check(matches(withText(dummyMovie.getName())));
 
@@ -74,5 +74,8 @@ public class DetailMovieActivityTest {
 		onView(withId(R.id.tv_description)).perform(scrollTo());
 		onView(withId(R.id.tv_description)).check(matches(isDisplayed()));
 		onView(withId(R.id.tv_description)).check(matches(withText(dummyMovie.getDescription())));
+
+		onView(withId(R.id.fab_favorite)).perform(scrollTo());
+		onView(withId(R.id.fab_favorite)).perform(click());
 	}
 }
