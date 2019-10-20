@@ -38,6 +38,12 @@ public class TvShowsFragmentTest {
 
 	@Test
 	public void	loadTvShows() {
+		try {
+			// Terlalu cepat, testing gagal
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			System.out.println(e.getMessage());
+		}
 		onView(withId(R.id.rv_tv_shows)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_tv_shows)).check(new RecyclerViewItemCountAssertion(20));
 	}

@@ -38,6 +38,12 @@ public class MoviesFragmentTest {
 
 	@Test
 	public void loadMovies() {
+		try {
+			// Terlalu cepat, testing gagal
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			System.out.println(e.getMessage());
+		}
 		onView(withId(R.id.rv_movies)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_movies)).check(new RecyclerViewItemCountAssertion(20));
 	}
