@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class LiveDataTestUtil {
 
@@ -22,12 +21,6 @@ public class LiveDataTestUtil {
 		};
 
 		liveData.observeForever(observer);
-
-		try {
-			latch.await(2, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
 		//noinspection unchecked
 		return (T) data[0];
