@@ -21,6 +21,7 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.core.AllOf.allOf;
 
 public class MovieCatalogueTest {
 
@@ -38,12 +39,25 @@ public class MovieCatalogueTest {
 	}
 
 	@Test
-	public void toDetailMovieActivity() {
+	public void toFavoritesMovieFragment() {
 		// Clear database favorites movie untuk skenario testing selanjutnya
 		onView(withId(R.id.navigation_favorites)).perform(click());
 		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(0));
 		onView(withId(R.id.action_clear)).perform(click());
+		onView(allOf(withId(R.id.tv_favorites_empty), isDisplayed())).check(matches(isDisplayed()));
+	}
 
+	@Test
+	public void toFavoritesTvShowFragment() {
+		// Clear database favorites tv show untuk skenario testing selanjutnya
+		onView(withId(R.id.navigation_favorites)).perform(click());
+		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(1));
+		onView(withId(R.id.action_clear)).perform(click());
+		onView(allOf(withId(R.id.tv_favorites_empty), isDisplayed())).check(matches(isDisplayed()));
+	}
+
+	@Test
+	public void toDetailMovieActivity() {
 		onView(withId(R.id.navigation_movies)).perform(click());
 		onView(withId(R.id.rv_movies)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_movies)).check(new RecyclerViewItemCountAssertion(20));
@@ -63,11 +77,6 @@ public class MovieCatalogueTest {
 
 	@Test
 	public void toDetailTvShowActivity() {
-		// Clear database favorites tv show untuk skenario testing selanjutnya
-		onView(withId(R.id.navigation_favorites)).perform(click());
-		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(1));
-		onView(withId(R.id.action_clear)).perform(click());
-
 		onView(withId(R.id.navigation_tv_shows)).perform(click());
 		onView(withId(R.id.rv_tv_shows)).check(matches(isDisplayed()));
 		onView(withId(R.id.rv_tv_shows)).check(new RecyclerViewItemCountAssertion(20));
