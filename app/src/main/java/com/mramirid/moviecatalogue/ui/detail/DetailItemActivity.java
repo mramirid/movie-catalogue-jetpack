@@ -1,5 +1,6 @@
 package com.mramirid.moviecatalogue.ui.detail;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -35,6 +37,20 @@ public class DetailItemActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_detail_item);
+
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setTitle("Description");
+		}
+
+		// Set back arrow color
+		if (toolbar.getNavigationIcon() != null)
+			toolbar.getNavigationIcon().setColorFilter(getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+
+		toolbar.setNavigationOnClickListener(view -> onBackPressed());
 
 		imgCover = findViewById(R.id.img_cover);
 		imgPhoto = findViewById(R.id.img_photo);
@@ -82,9 +98,7 @@ public class DetailItemActivity extends AppCompatActivity {
 			}
 		});
 
-		fabFavorite.setOnClickListener(view -> {
-			detailItemViewModel.setFavorite();
-		});
+		fabFavorite.setOnClickListener(view -> detailItemViewModel.setFavorite());
 	}
 
 	private void setFavoriteButtonState(boolean state) {
