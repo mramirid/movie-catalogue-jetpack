@@ -40,7 +40,6 @@ public class MovieCatalogueTest {
 
 	@Test
 	public void toFavoritesMovieFragment() {
-		// Clear database favorites movie untuk skenario testing selanjutnya
 		onView(withId(R.id.navigation_favorites)).perform(click());
 		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(0));
 		onView(withId(R.id.action_clear)).perform(click());
@@ -49,7 +48,6 @@ public class MovieCatalogueTest {
 
 	@Test
 	public void toFavoritesTvShowFragment() {
-		// Clear database favorites tv show untuk skenario testing selanjutnya
 		onView(withId(R.id.navigation_favorites)).perform(click());
 		onView(withId(R.id.tab_layout)).perform(new TabLayoutViewAction(1));
 		onView(withId(R.id.action_clear)).perform(click());
