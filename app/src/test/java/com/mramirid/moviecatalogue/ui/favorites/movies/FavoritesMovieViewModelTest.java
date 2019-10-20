@@ -1,4 +1,4 @@
-package com.mramirid.moviecatalogue.ui.movies;
+package com.mramirid.moviecatalogue.ui.favorites.movies;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
@@ -13,39 +13,40 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_MOVIE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MoviesViewModelTest {
+public class FavoritesMovieViewModelTest {
 
 	@Rule
 	public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
-	private MoviesViewModel moviesViewModel;
-	private MovieCatalogueRepository movieCatalogueRepository = mock(MovieCatalogueRepository.class);
+	private FavoritesMovieViewModel favoritesMovieViewModel;
+	private MovieCatalogueRepository movieCatalogueRepository;
 
 	@Before
 	public void setUp() {
-		moviesViewModel = new MoviesViewModel(movieCatalogueRepository);
+		movieCatalogueRepository = mock(MovieCatalogueRepository.class);
+		favoritesMovieViewModel = new FavoritesMovieViewModel(movieCatalogueRepository);
 	}
 
 	@Test
-	public void getMovies() {
-		MutableLiveData<Resource<PagedList<ItemEntity>>> dummyMovies = new MutableLiveData<>();
+	public void getFavoritesMovie() {
+		MutableLiveData<Resource<PagedList<ItemEntity>>> dummyFavoritesMovie = new MutableLiveData<>();
 
 		//noinspection unchecked
 		PagedList<ItemEntity> pagedList = mock(PagedList.class);
 
-		dummyMovies.setValue(Resource.success(pagedList));
+		dummyFavoritesMovie.setValue(Resource.success(pagedList));
 
-		when(movieCatalogueRepository.getMovies(false)).thenReturn(dummyMovies);
+		when(movieCatalogueRepository.getFavoritesPaged(TYPE_MOVIE)).thenReturn(dummyFavoritesMovie);
 
 		//noinspection unchecked
 		Observer<Resource<PagedList<ItemEntity>>> observer = mock(Observer.class);
 
-		moviesViewModel.fetch(false);
-		moviesViewModel.movies.observeForever(observer);
+		favoritesMovieViewModel.getFavoritesPaged().observeForever(observer);
 
 		verify(observer).onChanged(Resource.success(pagedList));
 	}

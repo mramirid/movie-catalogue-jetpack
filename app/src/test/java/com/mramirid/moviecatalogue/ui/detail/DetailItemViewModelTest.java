@@ -7,13 +7,12 @@ import androidx.lifecycle.Observer;
 import com.mramirid.moviecatalogue.data.source.MovieCatalogueRepository;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
 import com.mramirid.moviecatalogue.utils.FakeDataDummy;
+import com.mramirid.moviecatalogue.vo.Resource;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_MOVIE;
-import static com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity.TYPE_TV_SHOW;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -25,31 +24,34 @@ public class DetailItemViewModelTest {
 	@Rule
 	public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
-	private DetailItemViewModel viewModel;
+	private DetailItemViewModel detailItemViewModel;
 	private ItemEntity dummyMovie = FakeDataDummy.getDummyMovies().get(0);
 	private ItemEntity dummyTvShow = FakeDataDummy.getDummyTvShows().get(0);
 	private MovieCatalogueRepository movieCatalogueRepository = mock(MovieCatalogueRepository.class);
 
 	@Before
 	public void setUp() {
-		viewModel = new DetailItemViewModel(movieCatalogueRepository);
+		detailItemViewModel = new DetailItemViewModel(movieCatalogueRepository);
 	}
 
 	@Test
 	public void getMovie() {
-		MutableLiveData<ItemEntity> movie = new MutableLiveData<>();
-		movie.setValue(dummyMovie);
-		int movieId = dummyMovie.getId();
-		when(movieCatalogueRepository.getItem(TYPE_MOVIE, movieId)).thenReturn(movie);
+		Resource<ItemEntity> resourceMovie = Resource.success(dummyMovie);
+		MutableLiveData<Resource<ItemEntity>> movie = new MutableLiveData<>();
+		movie.setValue(resourceMovie);
 
-		viewModel.setItemType(TYPE_MOVIE);
-		viewModel.setItemId(movieId);
+		when(movieCatalogueRepository.getItem(dummyMovie.getId())).thenReturn(movie);
 
-		Observer<ItemEntity> observer = mock(Observer.class);
-		viewModel.getItem().observeForever(observer);
-		verify(observer).onChanged(dummyMovie);
+		//noinspection unchecked
+		Observer<Resource<ItemEntity>> observer = mock(Observer.class);
 
-		ItemEntity movieResult = viewModel.getItem().getValue();
+		detailItemViewModel.setItemId(dummyMovie.getId());
+		detailItemViewModel.item.observeForever(observer);
+
+		verify(observer).onChanged(resourceMovie);
+
+		assertNotNull(detailItemViewModel.item.getValue());
+		ItemEntity movieResult = detailItemViewModel.item.getValue().data;
 		assertNotNull(movieResult);
 		assertEquals(dummyMovie.getId(), movieResult.getId());
 		assertEquals(dummyMovie.getItemType(), movieResult.getItemType());
@@ -63,19 +65,22 @@ public class DetailItemViewModelTest {
 
 	@Test
 	public void getTvShow() {
-		MutableLiveData<ItemEntity> tvShow = new MutableLiveData<>();
-		tvShow.setValue(dummyTvShow);
-		int tvShowId = dummyTvShow.getId();
-		when(movieCatalogueRepository.getItem(TYPE_TV_SHOW, tvShowId)).thenReturn(tvShow);
+		Resource<ItemEntity> resourceTvShow = Resource.success(dummyTvShow);
+		MutableLiveData<Resource<ItemEntity>> tvShow = new MutableLiveData<>();
+		tvShow.setValue(resourceTvShow);
 
-		viewModel.setItemType(TYPE_TV_SHOW);
-		viewModel.setItemId(tvShowId);
+		when(movieCatalogueRepository.getItem(dummyTvShow.getId())).thenReturn(tvShow);
 
-		Observer<ItemEntity> observer = mock(Observer.class);
-		viewModel.getItem().observeForever(observer);
-		verify(observer).onChanged(dummyTvShow);
+		//noinspection unchecked
+		Observer<Resource<ItemEntity>> observer = mock(Observer.class);
 
-		ItemEntity tvShowResult = viewModel.getItem().getValue();
+		detailItemViewModel.setItemId(dummyTvShow.getId());
+		detailItemViewModel.item.observeForever(observer);
+
+		verify(observer).onChanged(resourceTvShow);
+
+		assertNotNull(detailItemViewModel.item.getValue());
+		ItemEntity tvShowResult = detailItemViewModel.item.getValue().data;
 		assertNotNull(tvShowResult);
 		assertEquals(dummyTvShow.getId(), tvShowResult.getId());
 		assertEquals(dummyTvShow.getItemType(), tvShowResult.getItemType());

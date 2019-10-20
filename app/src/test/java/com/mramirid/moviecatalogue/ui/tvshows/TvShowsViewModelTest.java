@@ -3,19 +3,16 @@ package com.mramirid.moviecatalogue.ui.tvshows;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+import androidx.paging.PagedList;
 
 import com.mramirid.moviecatalogue.data.source.MovieCatalogueRepository;
 import com.mramirid.moviecatalogue.data.source.local.entity.ItemEntity;
-import com.mramirid.moviecatalogue.utils.FakeDataDummy;
+import com.mramirid.moviecatalogue.vo.Resource;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,17 +32,21 @@ public class TvShowsViewModelTest {
 
 	@Test
 	public void getTvShows() {
-		ArrayList<ItemEntity> dummyTvShows = FakeDataDummy.getDummyTvShows();
-		MutableLiveData<ArrayList<ItemEntity>> tvShows = new MutableLiveData<>();
-		tvShows.setValue(dummyTvShows);
-		when(movieCatalogueRepository.getTvShows()).thenReturn(tvShows);
+		MutableLiveData<Resource<PagedList<ItemEntity>>> dummyTvShows = new MutableLiveData<>();
 
-		Observer<ArrayList<ItemEntity>> observer = mock(Observer.class);
-		viewModel.getTvShows().observeForever(observer);
-		verify(observer).onChanged(dummyTvShows);
+		//noinspection unchecked
+		PagedList<ItemEntity> pagedList = mock(PagedList.class);
 
-		ArrayList<ItemEntity> movieResults = viewModel.getTvShows().getValue();
-		assertNotNull(movieResults);
-		assertEquals(10, movieResults.size());
+		dummyTvShows.setValue(Resource.success(pagedList));
+
+		when(movieCatalogueRepository.getTvShows(false)).thenReturn(dummyTvShows);
+
+		//noinspection unchecked
+		Observer<Resource<PagedList<ItemEntity>>> observer = mock(Observer.class);
+
+		viewModel.fetch(false);
+		viewModel.tvShows.observeForever(observer);
+
+		verify(observer).onChanged(Resource.success(pagedList));
 	}
 }
