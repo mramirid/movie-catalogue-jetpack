@@ -21,7 +21,7 @@ public class FavoritesFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		final View view = inflater.inflate(R.layout.fragment_favorites, container, false);
+		final View view = inflater.inflate(R.layout.parent_favorites_fragment, container, false);
 
 		TabLayout tabLayout = view.findViewById(R.id.tab_layout);
 		ViewPager viewPager = view.findViewById(R.id.viewpager);

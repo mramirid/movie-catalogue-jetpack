@@ -20,5 +20,5 @@
         android:id="@+id/navigation_favorites"
         android:name="com.mramirid.moviecatalogue.ui.favorites.FavoritesFragment"
         android:label="@string/favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/parent_favorites_fragment" />
 </navigation>
