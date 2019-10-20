@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -74,8 +73,5 @@ public class DetailTvShowActivityTest {
 		onView(withId(R.id.tv_description)).perform(scrollTo());
 		onView(withId(R.id.tv_description)).check(matches(isDisplayed()));
 		onView(withId(R.id.tv_description)).check(matches(withText(dummyTvShow.getDescription())));
-
-		onView(withId(R.id.fab_favorite)).perform(scrollTo());
-		onView(withId(R.id.fab_favorite)).perform(click());
 	}
 }

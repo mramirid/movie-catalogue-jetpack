@@ -6,7 +6,6 @@ import androidx.test.rule.ActivityTestRule;
 import com.mramirid.moviecatalogue.R;
 import com.mramirid.moviecatalogue.testing.SingleFragmentActivity;
 import com.mramirid.moviecatalogue.utils.EspressoIdlingResource;
-import com.mramirid.moviecatalogue.utils.RecyclerViewItemCountAssertion;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +37,9 @@ public class FavoritesMovieFragmentTest {
 
 	@Test
 	public void loadFavoritesMovie() {
-		onView(withId(R.id.rv_favorites)).check(matches(isDisplayed()));
-		onView(withId(R.id.rv_favorites)).check(new RecyclerViewItemCountAssertion(1));
+		onView(withId(R.id.tv_favorites_empty)).check(matches(isDisplayed()));
+
+//		onView(withId(R.id.rv_favorites)).check(matches(isDisplayed()));
+//		onView(withId(R.id.rv_favorites)).check(new RecyclerViewItemCountAssertion(1));
 	}
 }
