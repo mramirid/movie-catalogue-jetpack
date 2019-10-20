@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class FavoritesMovieFragment extends Fragment {
 	private ProgressBar progressBar;
 	private ItemsPagedAdapter favoritesMovieAdapter;
 	private FavoritesMovieViewModel favoritesMovieViewModel;
+	private TextView tvFavoritesMovieEmpty;
 
 	public static FavoritesMovieFragment newInstance() {
 		return new FavoritesMovieFragment();
@@ -46,7 +48,7 @@ public class FavoritesMovieFragment extends Fragment {
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.favorites_fragment, container, false);
+		return inflater.inflate(R.layout.inner_favorites_fragment, container, false);
 	}
 
 	@Override
@@ -54,6 +56,7 @@ public class FavoritesMovieFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		rvFavoritesMovie = view.findViewById(R.id.rv_favorites);
 		progressBar = view.findViewById(R.id.progress_bar);
+		tvFavoritesMovieEmpty = view.findViewById(R.id.tv_favorites_empty);
 	}
 
 	@Override
@@ -73,9 +76,14 @@ public class FavoritesMovieFragment extends Fragment {
 							progressBar.setVisibility(View.GONE);
 							favoritesMovieAdapter.submitList(pagedListResource.data);
 							favoritesMovieAdapter.notifyDataSetChanged();
+							if (pagedListResource.data != null) {
+								if (pagedListResource.data.size() == 0)
+									tvFavoritesMovieEmpty.setVisibility(View.VISIBLE);
+							}
 							break;
 						case ERROR:
 							progressBar.setVisibility(View.GONE);
+							tvFavoritesMovieEmpty.setVisibility(View.VISIBLE);
 							Toast.makeText(getContext(), pagedListResource.message, Toast.LENGTH_SHORT).show();
 							break;
 					}

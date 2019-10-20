@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class FavoritesTvShowFragment extends Fragment {
 	private ProgressBar progressBar;
 	private FavoritesTvShowViewModel favoritesTvShowViewModel;
 	private ItemsPagedAdapter favoritesTvShowAdapter;
+	private TextView tvFavoritesTvShowEmpty;
 
 	public static FavoritesTvShowFragment newInstance() {
 		return new FavoritesTvShowFragment();
@@ -46,7 +48,7 @@ public class FavoritesTvShowFragment extends Fragment {
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.favorites_fragment, container, false);
+		return inflater.inflate(R.layout.inner_favorites_fragment, container, false);
 	}
 
 	@Override
@@ -54,6 +56,7 @@ public class FavoritesTvShowFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 		rvFavoritesTvShow = view.findViewById(R.id.rv_favorites);
 		progressBar = view.findViewById(R.id.progress_bar);
+		tvFavoritesTvShowEmpty = view.findViewById(R.id.tv_favorites_empty);
 	}
 
 	@Override
@@ -73,9 +76,14 @@ public class FavoritesTvShowFragment extends Fragment {
 							progressBar.setVisibility(View.GONE);
 							favoritesTvShowAdapter.submitList(pagedListResource.data);
 							favoritesTvShowAdapter.notifyDataSetChanged();
+							if (pagedListResource.data != null) {
+								if (pagedListResource.data.size() == 0)
+									tvFavoritesTvShowEmpty.setVisibility(View.VISIBLE);
+							}
 							break;
 						case ERROR:
 							progressBar.setVisibility(View.GONE);
+							tvFavoritesTvShowEmpty.setVisibility(View.VISIBLE);
 							Toast.makeText(getContext(), pagedListResource.message, Toast.LENGTH_SHORT).show();
 							break;
 					}
