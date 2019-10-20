@@ -85,7 +85,7 @@ public class TvShowsFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-		inflater.inflate(R.menu.toolbar_menu, menu);
+		inflater.inflate(R.menu.items_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
